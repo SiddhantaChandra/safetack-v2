@@ -22,7 +22,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Handle sign in
   const handleSignIn = async () => {
@@ -35,12 +35,12 @@ export default function AuthScreen() {
       setLoading(true);
       setError(null);
       
-      const { success, error } = await signIn(email, password);
+      const result = await signIn(email, password);
       
-      if (!success) throw error;
+      if (!result.success) throw result.error;
       
       // Navigation is handled by UserContext
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error signing in:', err);
       setError(err.message || 'Failed to sign in');
       setLoading(false);
@@ -58,12 +58,12 @@ export default function AuthScreen() {
       setLoading(true);
       setError(null);
       
-      const { success, error, data } = await signUp(email, password, name);
+      const result = await signUp(email, password, name);
       
-      if (!success) throw error;
+      if (!result.success) throw result.error;
       
       // If sign up successful but needs email verification
-      if (data?.user?.identities?.length === 0) {
+      if (result.data?.user?.identities?.length === 0) {
         Alert.alert(
           'Email Verification Needed',
           'Please check your email and click the verification link to complete registration.'
@@ -72,7 +72,7 @@ export default function AuthScreen() {
       }
       
       // Navigation is handled by UserContext
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error signing up:', err);
       setError(err.message || 'Failed to sign up');
       setLoading(false);
